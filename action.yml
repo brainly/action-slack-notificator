@@ -1,0 +1,15 @@
+name: 'slack notificator'
+description: 'Send slack notification'
+
+inputs:
+  webhookUrl:
+    description: 'Slack webhook URL'
+    required: true
+  pullRequestData:
+    description: 'Data of pull request which will be attach to message context in shape ot {title: string, url: string}'
+  messageContent:
+    description: 'Custom message content'
+
+runs:
+  using: 'node12'
+  main: 'dist/index.js'
