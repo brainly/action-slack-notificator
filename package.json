@@ -1,5 +1,5 @@
 {
-  "name": "autoupdate-branch",
+  "name": "slack-notificator",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
@@ -8,14 +8,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/brainly/autoupdate-branch.git"
+    "url": "git+https://github.com/brainly/action-slack-notificator.git"
   },
   "author": "",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/brainly/autoupdate-branch/issues"
+    "url": "https://github.com/brainly/action-slack-notificator/issues"
   },
-  "homepage": "https://github.com/brainly/autoupdate-branch#readme",
+  "homepage": "https://github.com/brainly/action-slack-notificator#readme",
   "dependencies": {
     "@actions/core": "^1.2.6",
     "@actions/github": "^4.0.0",
