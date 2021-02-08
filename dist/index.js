@@ -22078,12 +22078,12 @@ function getContextUserInfo({ userName, userUrl, avatarUrl, message, messageUrl,
                 elements: [
                     {
                         type: 'image',
-                        image_url: userData.avatarUrl,
+                        image_url: userData.avatarUrl || avatarUrl,
                         alt_text: 'avatar'
                     },
                     {
                         type: 'mrkdwn',
-                        text: `<${userData.url}|*${userData.url}*> :wave:`
+                        text: `<${userData.url}|*${userData.login}*> :wave:`
                     }
                 ]
             }
@@ -22112,27 +22112,28 @@ function main() {
         const webhookUrl = core.getInput('webhookUrl');
         const messageContent = core.getInput('messageContent');
         const pullRequestData = core.getInput('pullRequestData');
-        const { login, avatar_url, html_url } = github.context.payload.sender;
-        const { message, url } = github.context.payload.head_commit;
-        const initialMessage = getInitialMessage(messageContent);
-        const contextMessage = getContextMessage({
-            userName: login,
-            userUrl: html_url,
-            avatarUrl: avatar_url,
-            message: message,
-            messageUrl: url,
-            pullRequestData,
-        });
-        const body = {
-            blocks: [...contextMessage, ...initialMessage.blocks]
-        };
         try {
+            const { login, avatar_url, html_url } = github.context.payload.sender;
+            const { message, url } = github.context.payload.head_commit;
+            const initialMessage = getInitialMessage(messageContent);
+            const contextMessage = getContextMessage({
+                userName: login,
+                userUrl: html_url,
+                avatarUrl: avatar_url,
+                message: message,
+                messageUrl: url,
+                pullRequestData,
+            });
+            const body = {
+                blocks: [...contextMessage, ...initialMessage.blocks]
+            };
             yield lib(webhookUrl, {
                 method: 'post',
                 body: JSON.stringify(body)
             });
         }
         catch (e) {
+            console.error(e);
             throw e;
         }
     });

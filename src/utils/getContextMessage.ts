@@ -74,12 +74,12 @@ export function getContextUserInfo({
         elements: [
           {
             type: 'image',
-            image_url: userData.avatarUrl,
+            image_url: userData.avatarUrl || avatarUrl,
             alt_text: 'avatar'
           },
           {
             type: 'mrkdwn',
-            text: `<${userData.url}|*${userData.url}*> :wave:`
+            text: `<${userData.url}|*${userData.login}*> :wave:`
           }
         ]
       }

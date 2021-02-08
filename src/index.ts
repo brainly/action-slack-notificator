@@ -9,12 +9,12 @@ async function main() {
   const messageContent = core.getInput('messageContent');
   const pullRequestData = core.getInput('pullRequestData');
 
+  try {
+    const {login, avatar_url, html_url} = context.payload.sender;
+    const {message, url} = context.payload.head_commit;
 
-  const {login, avatar_url, html_url} = context.payload.sender;
-  const {message, url} = context.payload.head_commit;
-
-  const initialMessage = getInitialMessage(messageContent);
-  const contextMessage = getContextMessage({
+    const initialMessage = getInitialMessage(messageContent);
+    const contextMessage = getContextMessage({
       userName: login,
       userUrl: html_url,
       avatarUrl: avatar_url,
@@ -23,16 +23,16 @@ async function main() {
       pullRequestData,
     });
 
-  const body = {
-    blocks: [...contextMessage, ...initialMessage.blocks]
-  }
+    const body = {
+      blocks: [...contextMessage, ...initialMessage.blocks]
+    }
 
-  try {
     await fetch(webhookUrl, {
       method: 'post',
       body: JSON.stringify(body)
     })
   } catch (e) {
+    console.error(e)
     throw e;
   }
 }
