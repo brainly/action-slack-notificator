@@ -1,3 +1,6 @@
+import {BlockElement, Block} from '../types/block';
+import {pipe} from 'ramda';
+
 interface ContextMessageProps {
   userName: string;
   userUrl: string;
@@ -7,27 +10,42 @@ interface ContextMessageProps {
   pullRequestData?: string | undefined
 }
 
-function buildContextMessage({
+function getContextInfoMessage({
   message,
   messageUrl,
-  pullRequestData
+  pullRequestData,
+  blocks,
 }: {
   message: string,
   messageUrl: string,
-  pullRequestData?: string | undefined
+  pullRequestData?: string | undefined,
+  blocks: BlockElement[]
 }) {
   const baseMessage = `Changes: <${messageUrl}|${message.replace(/\n/gm, ', ')}>`
 
+  let builtMessage = baseMessage;
+
   try {
     const parsedPRData = JSON.parse(pullRequestData);
-    return ` \n Pull Request: <${parsedPRData.url}|${parsedPRData.title}>`
-  } catch {
-    return baseMessage;
-  }
+    builtMessage = `${baseMessage} \n Pull Request: <${parsedPRData.url}|${parsedPRData.title}>`
+  } catch {}
+
+  return [
+    ...blocks,
+    {
+      type: 'context',
+      elements: [
+        {
+          type: 'mrkdwn',
+          text: builtMessage,
+        }
+      ]
+    },
+  ]
 }
 
 
-export function getContextMessage({
+export function getContextUserInfo({
   userName,
   userUrl,
   avatarUrl,
@@ -35,31 +53,41 @@ export function getContextMessage({
   messageUrl,
   pullRequestData
 }: ContextMessageProps) {
+  let userData = {
+    login: userName,
+    url: userUrl,
+    avatarUrl: avatarUrl,
+  }
+
+  try {
+    const parsedPRData = JSON.parse(pullRequestData);
+    userData = parsedPRData.user;
+  } catch {}
+
   return {
+    message,
+    messageUrl,
+    pullRequestData,
     blocks: [
       {
         type: 'context',
         elements: [
           {
             type: 'image',
-            image_url: avatarUrl,
+            image_url: userData.avatarUrl,
             alt_text: 'avatar'
           },
           {
             type: 'mrkdwn',
-            text: `<${userUrl}|*${userName}*> :wave:`
+            text: `<${userData.url}|*${userData.url}*> :wave:`
           }
         ]
-      },
-      {
-        type: 'context',
-        elements: [
-          {
-            type: 'mrkdwn',
-            text: buildContextMessage({message, messageUrl, pullRequestData})
-          }
-        ]
-      },
+      }
     ]
   }
 }
+
+export const getContextMessage: (props: ContextMessageProps) => Block[] = pipe(
+  getContextUserInfo,
+  getContextInfoMessage
+)

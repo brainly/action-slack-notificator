@@ -24,7 +24,7 @@ async function main() {
     });
 
   const body = {
-    blocks: [...contextMessage.blocks, ...initialMessage.blocks]
+    blocks: [...contextMessage, ...initialMessage.blocks]
   }
 
   try {
