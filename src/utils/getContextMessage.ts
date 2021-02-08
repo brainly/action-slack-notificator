@@ -16,11 +16,11 @@ function buildContextMessage({
   messageUrl: string,
   pullRequestData?: string | undefined
 }) {
-  const baseMessage = `Changes: <${messageUrl}|${message}>`
+  const baseMessage = `Changes: <${messageUrl}|${message.replace(/\n/gm, ', ')}>`
 
   try {
     const parsedPRData = JSON.parse(pullRequestData);
-    return `${baseMessage} \n Pull Request: <${parsedPRData.url}|${parsedPRData.title}>`
+    return ` \n Pull Request: <${parsedPRData.url}|${parsedPRData.title}>`
   } catch {
     return baseMessage;
   }
