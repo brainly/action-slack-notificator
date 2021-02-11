@@ -6,7 +6,7 @@ inputs:
     description: 'Slack webhook URL'
     required: true
   pullRequestData:
-    description: 'Data of pull request which will be attach to message context in shape ot {title: string, url: string, user: {url, login, avatarUrl}}}'
+    description: 'Data of pull request which will be attach to message context in shape of {title: string, url: string, user: {url, login, avatarUrl}}}'
   messageContent:
     description: 'Custom message content'
 

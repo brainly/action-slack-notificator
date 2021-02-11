@@ -10,5 +10,5 @@ export type BlockElement =
     image_url?:string;
     alt_text?: string;
   } & {
-  [prop: string]: unknown;
-};
+    [prop: string]: unknown;
+  };

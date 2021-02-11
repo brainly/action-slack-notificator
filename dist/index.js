@@ -21996,7 +21996,7 @@ function wrappy (fn, cb) {
 
 /***/ }),
 
-/***/ 1980:
+/***/ 7295:
 /***/ ((__unused_webpack_module, __webpack_exports__, __nccwpck_require__) => {
 
 "use strict";
@@ -22009,70 +22009,81 @@ var core = __nccwpck_require__(2186);
 var github = __nccwpck_require__(5438);
 // EXTERNAL MODULE: ./node_modules/node-fetch/lib/index.js
 var lib = __nccwpck_require__(467);
-// CONCATENATED MODULE: ./src/utils/getInitialMessage.ts
-function getInitialMessage(message) {
-    if (!message) {
-        return { blocks: [] };
+// EXTERNAL MODULE: ./node_modules/ramda/src/index.js
+var src = __nccwpck_require__(4119);
+// CONCATENATED MODULE: ./src/utils/appendCustomMessageBlock.ts
+function appendCustomMessageBlock(props) {
+    const { messageContent } = props;
+    if (!messageContent) {
+        return props;
     }
     try {
-        return JSON.parse(message);
+        const { blocks } = JSON.parse(messageContent);
+        return Object.assign(Object.assign({}, props), { blocks: [
+                ...props.blocks,
+                ...blocks
+            ] });
     }
     catch (_a) {
-        return {
-            blocks: [
-                {
+        return Object.assign({ blocks: [...props.blocks, {
                     type: 'section',
                     text: {
                         type: 'mrkdwn',
-                        text: message
+                        text: messageContent
                     }
-                }
-            ]
-        };
+                }] }, props);
     }
 }
 
-// EXTERNAL MODULE: ./node_modules/ramda/src/index.js
-var src = __nccwpck_require__(4119);
-// CONCATENATED MODULE: ./src/utils/getContextMessage.ts
+// CONCATENATED MODULE: ./src/utils/parsePrData.ts
+function parsePrData(props) {
+    const { pullRequestData } = props;
+    try {
+        const parsedData = JSON.parse(pullRequestData);
+        return Object.assign(Object.assign({}, props), { pullRequestData: parsedData });
+    }
+    catch (_a) {
+        return Object.assign(Object.assign({}, props), { pullRequestData: null });
+    }
+}
 
-function getContextInfoMessage({ message, messageUrl, pullRequestData, blocks, }) {
+// CONCATENATED MODULE: ./src/utils/prepareSlackPayload.ts
+function prepareSlackPayload({ blocks }) {
+    return { blocks };
+}
+
+// CONCATENATED MODULE: ./src/utils/appendContextMessageBlock.ts
+function appendContextMessageBlock(props) {
+    const { message, messageUrl, pullRequestData } = props;
     const baseMessage = `Changes: <${messageUrl}|${message.replace(/\n/gm, ', ')}>`;
-    let builtMessage = baseMessage;
-    try {
-        const parsedPRData = JSON.parse(pullRequestData);
-        builtMessage = `${baseMessage} \n Pull Request: <${parsedPRData.url}|${parsedPRData.title}>`;
-    }
-    catch (_a) { }
-    return [
-        ...blocks,
-        {
-            type: 'context',
-            elements: [
-                {
-                    type: 'mrkdwn',
-                    text: builtMessage,
-                }
-            ]
-        },
-    ];
+    const builtMessage = pullRequestData
+        ? `${baseMessage} \n Pull Request: <${pullRequestData.url}|${pullRequestData.title}>`
+        : baseMessage;
+    return Object.assign(Object.assign({}, props), { blocks: [
+            ...props.blocks,
+            {
+                type: 'context',
+                elements: [
+                    {
+                        type: 'mrkdwn',
+                        text: builtMessage,
+                    }
+                ]
+            },
+        ] });
 }
-function getContextUserInfo({ userName, userUrl, avatarUrl, message, messageUrl, pullRequestData }) {
-    let userData = {
-        login: userName,
-        url: userUrl,
-        avatarUrl: avatarUrl,
-    };
-    try {
-        const parsedPRData = JSON.parse(pullRequestData);
-        userData = parsedPRData.user;
-    }
-    catch (_a) { }
-    return {
-        message,
-        messageUrl,
-        pullRequestData,
-        blocks: [
+
+// CONCATENATED MODULE: ./src/utils/appendUserInfoBlock.ts
+function appendUserInfoBlock(props) {
+    const { userName, userUrl, avatarUrl, pullRequestData } = props;
+    const userData = pullRequestData
+        ? {
+            login: userName,
+            url: userUrl,
+            avatarUrl: avatarUrl,
+        } : Object.assign({}, pullRequestData.user);
+    return Object.assign(Object.assign({}, props), { blocks: [
+            ...props.blocks,
             {
                 type: 'context',
                 elements: [
@@ -22087,10 +22098,17 @@ function getContextUserInfo({ userName, userUrl, avatarUrl, message, messageUrl,
                     }
                 ]
             }
-        ]
-    };
+        ] });
 }
-const getContextMessage = (0,src.pipe)(getContextUserInfo, getContextInfoMessage);
+
+// CONCATENATED MODULE: ./src/messageBuilder.ts
+
+
+
+
+
+
+const buildMessage = (0,src.pipe)(parsePrData, appendUserInfoBlock, appendContextMessageBlock, appendCustomMessageBlock, prepareSlackPayload);
 
 // CONCATENATED MODULE: ./src/index.ts
 var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
@@ -22106,7 +22124,6 @@ var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _argume
 
 
 
-
 function main() {
     return __awaiter(this, void 0, void 0, function* () {
         const webhookUrl = core.getInput('webhookUrl');
@@ -22115,21 +22132,19 @@ function main() {
         try {
             const { login, avatar_url, html_url } = github.context.payload.sender;
             const { message, url } = github.context.payload.head_commit;
-            const initialMessage = getInitialMessage(messageContent);
-            const contextMessage = getContextMessage({
+            const contextMessage = buildMessage({
                 userName: login,
                 userUrl: html_url,
                 avatarUrl: avatar_url,
                 message: message,
                 messageUrl: url,
+                blocks: [],
+                messageContent,
                 pullRequestData,
             });
-            const body = {
-                blocks: [...contextMessage, ...initialMessage.blocks]
-            };
             yield lib(webhookUrl, {
                 method: 'post',
-                body: JSON.stringify(body)
+                body: JSON.stringify(contextMessage)
             });
         }
         catch (e) {
@@ -22304,6 +22319,6 @@ module.exports = require("zlib");;
 /******/ 	// module exports must be returned from runtime so entry inlining is disabled
 /******/ 	// startup
 /******/ 	// Load entry module and return exports
-/******/ 	return __nccwpck_require__(1980);
+/******/ 	return __nccwpck_require__(7295);
 /******/ })()
 ;

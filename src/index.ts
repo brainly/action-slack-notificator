@@ -1,8 +1,7 @@
 import * as core from '@actions/core';
 import {context} from '@actions/github';
 import * as fetch from 'node-fetch';
-import {getInitialMessage} from "./utils/getInitialMessage";
-import {getContextMessage} from "./utils/getContextMessage";
+import {buildMessage} from "./messageBuilder";
 
 async function main() {
   const webhookUrl = core.getInput('webhookUrl');
@@ -13,23 +12,21 @@ async function main() {
     const {login, avatar_url, html_url} = context.payload.sender;
     const {message, url} = context.payload.head_commit;
 
-    const initialMessage = getInitialMessage(messageContent);
-    const contextMessage = getContextMessage({
+
+    const contextMessage = buildMessage({
       userName: login,
       userUrl: html_url,
       avatarUrl: avatar_url,
       message: message,
       messageUrl: url,
+      blocks: [],
+      messageContent,
       pullRequestData,
     });
 
-    const body = {
-      blocks: [...contextMessage, ...initialMessage.blocks]
-    }
-
     await fetch(webhookUrl, {
       method: 'post',
-      body: JSON.stringify(body)
+      body: JSON.stringify(contextMessage)
     })
   } catch (e) {
     console.error(e)
