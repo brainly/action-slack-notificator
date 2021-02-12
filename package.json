@@ -1,0 +1,29 @@
+{
+  "name": "slack-notificator",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "build": "ncc build -o ./dist ./src/index.ts"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/brainly/action-slack-notificator.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/brainly/action-slack-notificator/issues"
+  },
+  "homepage": "https://github.com/brainly/action-slack-notificator#readme",
+  "dependencies": {
+    "@actions/core": "^1.2.6",
+    "@actions/github": "^4.0.0",
+    "node-fetch": "^2.6.1",
+    "ramda": "^0.27.1"
+  },
+  "devDependencies": {
+    "@vercel/ncc": "^0.27.0",
+    "typescript": "^4.1.3"
+  }
+}
