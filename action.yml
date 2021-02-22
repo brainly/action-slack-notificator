@@ -1,5 +1,7 @@
 name: 'slack notificator'
 description: 'Send slack notification'
+icon: 'bell'
+color: 'yellow'
 
 inputs:
   webhookUrl:
