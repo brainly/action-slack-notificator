@@ -10,14 +10,14 @@ async function main() {
 
   try {
     const {login, avatar_url, html_url} = context.payload.sender;
-    const {message, url} = context.payload.head_commit;
+    const {id, url} = context.payload.head_commit;
 
 
     const contextMessage = buildMessage({
       userName: login,
       userUrl: html_url,
       avatarUrl: avatar_url,
-      message: message,
+      message: `Commit hash: ${id}`,
       messageUrl: url,
       blocks: [],
       messageContent,
