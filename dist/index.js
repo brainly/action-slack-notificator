@@ -22077,11 +22077,12 @@ function appendContextMessageBlock(props) {
 function appendUserInfoBlock(props) {
     const { userName, userUrl, avatarUrl, pullRequestData } = props;
     const userData = pullRequestData
-        ? {
+        ? Object.assign({}, pullRequestData.user) :
+        {
             login: userName,
             url: userUrl,
             avatarUrl: avatarUrl,
-        } : Object.assign({}, pullRequestData.user);
+        };
     return Object.assign(Object.assign({}, props), { blocks: [
             ...props.blocks,
             {
@@ -22131,12 +22132,12 @@ function main() {
         const pullRequestData = core.getInput('pullRequestData');
         try {
             const { login, avatar_url, html_url } = github.context.payload.sender;
-            const { message, url } = github.context.payload.head_commit;
+            const { id, url } = github.context.payload.head_commit;
             const contextMessage = buildMessage({
                 userName: login,
                 userUrl: html_url,
                 avatarUrl: avatar_url,
-                message: message,
+                message: id,
                 messageUrl: url,
                 blocks: [],
                 messageContent,

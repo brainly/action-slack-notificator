@@ -2,15 +2,17 @@ import {MessageBuilderPropsWithParsedPR} from "../types/messageBuilder";
 
 export function appendUserInfoBlock(props: MessageBuilderPropsWithParsedPR): MessageBuilderPropsWithParsedPR {
   const {userName, userUrl, avatarUrl, pullRequestData} = props;
+
   const userData = pullRequestData
     ? {
-      login: userName,
-      url: userUrl,
-      avatarUrl: avatarUrl,
+        ...pullRequestData.user
       } :
       {
-        ...pullRequestData.user
+        login: userName,
+        url: userUrl,
+        avatarUrl: avatarUrl,
       }
+
 
 
   return {
