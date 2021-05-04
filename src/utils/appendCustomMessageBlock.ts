@@ -18,6 +18,7 @@ export function appendCustomMessageBlock(props: MessageBuilderPropsWithParsedPR)
     };
   } catch {
     return {
+      ...props,
       blocks: [...props.blocks, {
         type: 'section',
         text: {
@@ -25,7 +26,6 @@ export function appendCustomMessageBlock(props: MessageBuilderPropsWithParsedPR)
           text: messageContent
         }
       }],
-      ...props
     }
   }
 }
