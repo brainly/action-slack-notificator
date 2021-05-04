@@ -17,7 +17,7 @@ async function main() {
       userName: login,
       userUrl: html_url,
       avatarUrl: avatar_url,
-      message: id,
+      message: `Commit hash: ${id}`,
       messageUrl: url,
       blocks: [],
       messageContent,
