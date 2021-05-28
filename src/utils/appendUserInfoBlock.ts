@@ -4,10 +4,8 @@ export function appendUserInfoBlock(props: MessageBuilderPropsWithParsedPR): Mes
   const {userName, userUrl, avatarUrl, pullRequestData} = props;
 
   const userData = pullRequestData
-    ? {
-        ...pullRequestData.user
-      } :
-      {
+    ? pullRequestData.user
+    : {
         login: userName,
         url: userUrl,
         avatarUrl: avatarUrl,
@@ -24,7 +22,7 @@ export function appendUserInfoBlock(props: MessageBuilderPropsWithParsedPR): Mes
         elements: [
           {
             type: 'image',
-            image_url: userData.avatarUrl || avatarUrl,
+            image_url: userData.avatarUrl,
             alt_text: 'avatar'
           },
           {

@@ -1,6 +1,9 @@
 export interface Block {
   type: string;
-  elements: BlockElement[];
+  elements?: BlockElement[];
+  text?: {
+    [prop: string]: unknown;
+  };
 }
 
 export type BlockElement =
